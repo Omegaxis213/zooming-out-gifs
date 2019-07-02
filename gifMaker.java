@@ -57,39 +57,39 @@ public class gifMaker {
 
 		double dis=(double)(nextMaxXBound-maxXBound+arr[0].getWidth());
 		double temp=arr[0].getWidth();
-		int numOfFrames=0;
-		while(temp<dis)
-		{
-			//10% increase each frame
-			temp*=1.1;
-			numOfFrames++;
-		}
+		int numOfFrames=(int)Math.ceil(5000.0/delay);
+		// while(temp<dis)
+		// {
+		// 	//10% increase each frame
+		// 	temp*=1.1;
+		// 	numOfFrames++;
+		// }
 
-		//TODO WORK ON PERCENTAGE ZOOM
-		double minXBoundMult=2-Math.log((double)(minXBound-nextMinXBound)/arr[0].getHeight())/Math.log(numOfFrames);
-		double maxXBoundMult=1.1;
-		double minYBoundMult=Math.log((double)(minYBound-nextMinYBound)/arr[0].getHeight())/Math.log(numOfFrames);
-		double maxYBoundMult=2-Math.log((double)(nextMaxYBound-maxYBound)/arr[0].getHeight())/Math.log(numOfFrames);
-		numOfFrames--;
-		System.out.println(minXBoundMult+" "+maxXBoundMult+" "+minYBoundMult+" "+maxYBoundMult);
-		double tempOne=minXBound;
-		double tempTwo=minYBound;
-		double tempThree=maxXBound;
-		double tempFour=maxYBound;
-		for (int i = 0; i < numOfFrames; i++) {
-			tempOne*=minXBoundMult;
-			tempTwo*=minYBoundMult;
-			tempThree*=maxXBoundMult;
-			tempFour*=maxYBoundMult;
-			System.out.println(tempOne+" "+tempTwo+" "+tempThree+" "+tempFour);
-		}
+		// //TODO WORK ON PERCENTAGE ZOOM
+		// double minXBoundMult=2-Math.log((double)(minXBound-nextMinXBound)/arr[0].getHeight())/Math.log(numOfFrames);
+		// double maxXBoundMult=1.1;
+		// double minYBoundMult=Math.log((double)(minYBound-nextMinYBound)/arr[0].getHeight())/Math.log(numOfFrames);
+		// double maxYBoundMult=2-Math.log((double)(nextMaxYBound-maxYBound)/arr[0].getHeight())/Math.log(numOfFrames);
+		// numOfFrames--;
+		// System.out.println(minXBoundMult+" "+maxXBoundMult+" "+minYBoundMult+" "+maxYBoundMult);
+		// double tempOne=minXBound;
+		// double tempTwo=minYBound;
+		// double tempThree=maxXBound;
+		// double tempFour=maxYBound;
+		// for (int i = 0; i < numOfFrames; i++) {
+		// 	tempOne*=minXBoundMult;
+		// 	tempTwo*=minYBoundMult;
+		// 	tempThree*=maxXBoundMult;
+		// 	tempFour*=maxYBoundMult;
+		// 	System.out.println(tempOne+" "+tempTwo+" "+tempThree+" "+tempFour);
+		// }
 		// int numOfFrames=(int)Math.ceil(10000.0/delay);
 		// numOfFrames=(int)Math.ceil(10000.0/delay);
 
-		// double minXBoundInc=(double)(minXBound-nextMinXBound)/numOfFrames;
-		// double maxXBoundInc=(double)(nextMaxXBound-maxXBound)/numOfFrames;
-		// double minYBoundInc=(double)(minYBound-nextMinYBound)/numOfFrames;
-		// double maxYBoundInc=(double)(nextMaxYBound-maxYBound)/numOfFrames;
+		double minXBoundInc=(double)(minXBound-nextMinXBound)/numOfFrames;
+		double maxXBoundInc=(double)(nextMaxXBound-maxXBound)/numOfFrames;
+		double minYBoundInc=(double)(minYBound-nextMinYBound)/numOfFrames;
+		double maxYBoundInc=(double)(nextMaxYBound-maxYBound)/numOfFrames;
 
 		BufferedImage[] res=new BufferedImage[numOfFrames];
 
@@ -163,14 +163,14 @@ public class gifMaker {
 			}
 			e.setDelay(delay);
 			e.addFrame(res[i]);
-			minXBound*=minXBoundMult;
-			maxXBound*=maxXBoundMult;
-			minYBound*=minYBoundMult;
-			maxYBound*=maxYBoundMult;
-			// minXBound-=minXBoundInc;
-			// minYBound-=minYBoundInc;
-			// maxXBound+=maxXBoundInc;
-			// maxYBound+=maxYBoundInc;
+			// minXBound*=minXBoundMult;
+			// maxXBound*=maxXBoundMult;
+			// minYBound*=minYBoundMult;
+			// maxYBound*=maxYBoundMult;
+			minXBound-=minXBoundInc;
+			minYBound-=minYBoundInc;
+			maxXBound+=maxXBoundInc;
+			maxYBound+=maxYBoundInc;
 		}
 		test.finish();
 		e.finish();
