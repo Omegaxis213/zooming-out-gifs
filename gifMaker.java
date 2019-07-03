@@ -12,7 +12,7 @@ public class gifMaker {
 			BufferedImage frame = d.getFrame(i);
 			arr[i] = frame;
 		}
-		int scaleFactor=3;
+		int scaleFactor=1;
 		int[][][][] avgColors=new int[n][arr[0].getHeight()/scaleFactor+1][arr[0].getWidth()/scaleFactor+1][4];
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < arr[0].getHeight(); j++) {
@@ -42,7 +42,7 @@ public class gifMaker {
 		}
 		System.out.println(arr[0].getHeight()+" "+arr[0].getWidth());
 		//starting gif number/position
-		double startGifNumX=arr[0].getWidth()/(scaleFactor*2);
+		double startGifNumX=arr[0].getWidth()/(scaleFactor*3);
 		double startGifNumY=arr[0].getHeight()/(scaleFactor*2);
 
 		//linear zoom
@@ -74,7 +74,7 @@ public class gifMaker {
 		double nextMinYBound=arr[0].getHeight()/2.0+startGifNumY*arr[0].getHeight();
 		double nextMaxYBound=arr[0].getHeight()*arr[0].getHeight()/scaleFactor-(arr[0].getHeight()/2.0*3+startGifNumY*arr[0].getHeight());
 
-		int numOfFrames=4*n;
+		int numOfFrames=3*n;
 		double minXBoundMult=Math.pow(10,Math.log10(nextMinXBound/minXBoundLen)/numOfFrames);
 		double minYBoundMult=Math.pow(10,Math.log10(nextMinYBound/minYBoundLen)/numOfFrames);
 		double maxXBoundMult=Math.pow(10,Math.log10(nextMaxXBound/maxXBoundLen)/numOfFrames);
@@ -84,8 +84,8 @@ public class gifMaker {
 		//Linear moving center for now
 		double gifCenterXPos=startGifNumX*arr[0].getWidth()+arr[0].getWidth()/2.0;
 		double gifCenterYPos=startGifNumY*arr[0].getHeight()+arr[0].getHeight()/2.0;
-		double gifEndXPos=arr[0].getWidth()*arr[0].getWidth()/(scaleFactor*2);
-		double gifEndYPos=arr[0].getHeight()*arr[0].getHeight()/(scaleFactor*2);
+		double gifEndXPos=arr[0].getWidth()*arr[0].getWidth()/scaleFactor-nextMaxXBound-arr[0].getWidth()/2.0;
+		double gifEndYPos=arr[0].getHeight()*arr[0].getHeight()/scaleFactor-nextMaxYBound-arr[0].getHeight()/2.0;
 		double gifCenterXInc=(gifEndXPos-gifCenterXPos)/numOfFrames;
 		double gifCenterYInc=(gifEndYPos-gifCenterYPos)/numOfFrames;
 
@@ -152,10 +152,10 @@ public class gifMaker {
 					int red=color>>16&255;
 					int green=color>>8&255;
 					int blue=color&255;
-					alpha=(int)(alpha*(1-.8*i/numOfFrames)+avgColors[i%n][gifYPos][gifXPos][0]*(.8*i/numOfFrames));
-					red=(int)(red*(1-.8*i/numOfFrames)+avgColors[i%n][gifYPos][gifXPos][1]*(.8*i/numOfFrames));
-					green=(int)(green*(1-.8*i/numOfFrames)+avgColors[i%n][gifYPos][gifXPos][2]*(.8*i/numOfFrames));
-					blue=(int)(blue*(1-.8*i/numOfFrames)+avgColors[i%n][gifYPos][gifXPos][3]*(.8*i/numOfFrames));
+					alpha=(int)(alpha*(1-.9*i/numOfFrames)+avgColors[i%n][gifYPos][gifXPos][0]*(.9*i/numOfFrames));
+					red=(int)(red*(1-.9*i/numOfFrames)+avgColors[i%n][gifYPos][gifXPos][1]*(.9*i/numOfFrames));
+					green=(int)(green*(1-.9*i/numOfFrames)+avgColors[i%n][gifYPos][gifXPos][2]*(.9*i/numOfFrames));
+					blue=(int)(blue*(1-.9*i/numOfFrames)+avgColors[i%n][gifYPos][gifXPos][3]*(.9*i/numOfFrames));
 					color=(alpha<<24)+(red<<16)+(green<<8)+blue;
 					res[i].setRGB(k,j,color);
 				}
