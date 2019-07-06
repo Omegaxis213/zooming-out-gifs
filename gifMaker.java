@@ -118,6 +118,7 @@ public class gifMaker {
 			int xPos=Integer.parseInt(st.nextToken());
 			int yPos=Integer.parseInt(st.nextToken());
 			int gifType=Integer.parseInt(st.nextToken());
+			layer--;
 			if(layer<=0||layer>gifTypeOverride.length)
 			{
 				System.out.println("Please put in a valid layer for line "+counter);
@@ -138,7 +139,6 @@ public class gifMaker {
 				System.out.println("please put in a valid gif type within 1 to "+(arr[layer].length)+" for line "+counter);
 				continue;
 			}
-			layer--;
 			gifTypeOverride[layer][yPos][xPos]=gifType;
 			counter++;
 		}
