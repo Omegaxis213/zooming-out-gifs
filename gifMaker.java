@@ -7,7 +7,7 @@ public class gifMaker {
 	public static void main(String[] args) throws Exception {
 		//gif to be used
 		int numOfGifs=0;
-		while(new File("gifs/gif"+(numOfGifs+1)+"-1.gif").isFile())
+		while(new File("gifs/gif"+(numOfGifs+1)+"-1.gif").isFile()||new File("gifs/gif"+(numOfGifs+1)+".gif").isFile())
 			numOfGifs++;
 
 		int[][] frameLen=new int[numOfGifs][];
@@ -89,9 +89,9 @@ public class gifMaker {
 		}
 		//manual override for starting position of the gif on each layer
 		int[][] startPos=new int[numOfGifs][2];
+		f=new BufferedReader(new FileReader("gifs/gifStartingPositions.txt"));
 		for (int i = 0; i < numOfGifs; i++) {
 			startPos[i][0]=startPos[i][1]=-1;
-			f=new BufferedReader(new FileReader("gifs/gifStartingPositions.txt"));
 			if(!f.ready()) continue;
 			StringTokenizer st=new StringTokenizer(f.readLine());
 			int xPos=Integer.parseInt(st.nextToken());
@@ -106,7 +106,7 @@ public class gifMaker {
 		}
 		int[][][] gifTypeOverride=new int[numOfGifs][][];
 		for (int i = 0; i < numOfGifs; i++) {
-			gifTypeOverride[i]=new int[arr[(i+numOfGifs-1)%numOfGifs][0][0].getHeight()][arr[(i+numOfGifs-1)%numOfGifs][0][0].getWidth()];
+			gifTypeOverride[i]=new int[arr[(i+1)%numOfGifs][0][0].getHeight()][arr[(i+1)%numOfGifs][0][0].getWidth()];
 		}
 		f=new BufferedReader(new FileReader("gifs/gifTypes.txt"));
 		int counter=1;
