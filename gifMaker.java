@@ -34,7 +34,7 @@ public class gifMaker {
 				arr[i][a] = new BufferedImage[n];
 
 				frameLen[i][a] = n;
-				//only want the delay of the first gif
+				//only want the delay of the first gif of each layer
 				if(a==0)
 					delay[i] = d.getDelay(0);
 
@@ -87,10 +87,70 @@ public class gifMaker {
 			if(num<=0) continue;
 			frameMult[i]=num;
 		}
+		//manual override for starting position of the gif on each layer
+		int[][] startPos=new int[numOfGifs][2];
+		for (int i = 0; i < numOfGifs; i++) {
+			startPos[i][0]=startPos[i][1]=-1;
+			f=new BufferedReader(new FileReader("gifs/gifStartingPositions.txt"));
+			if(!f.ready()) continue;
+			StringTokenizer st=new StringTokenizer(f.readLine());
+			int xPos=Integer.parseInt(st.nextToken());
+			int yPos=Integer.parseInt(st.nextToken());
+			if(xPos<0||yPos<0||xPos>=arr[i][0][0].getWidth()||yPos>=arr[i][0][0].getHeight())
+			{
+				System.out.println("Please put a coordinate within 0 to "+(arr[i][0][0].getWidth()-1)+" for the X position and 0 to "+(arr[i][0][0].getHeight()-1)+" for the Y position on layer "+(i+1));
+				continue;
+			}
+			startPos[i][0]=xPos;
+			startPos[i][1]=yPos;
+		}
+		int[][][] gifTypeOverride=new int[numOfGifs][][];
+		for (int i = 0; i < numOfGifs; i++) {
+			gifTypeOverride[i]=new int[arr[(i+numOfGifs-1)%numOfGifs][0][0].getHeight()][arr[(i+numOfGifs-1)%numOfGifs][0][0].getWidth()];
+		}
+		f=new BufferedReader(new FileReader("gifs/gifTypes.txt"));
+		int counter=1;
+		//manual override for which gif is used where
+		while(f.ready())
+		{
+			StringTokenizer st=new StringTokenizer(f.readLine(),"(,) ");
+			int layer=Integer.parseInt(st.nextToken());
+			int xPos=Integer.parseInt(st.nextToken());
+			int yPos=Integer.parseInt(st.nextToken());
+			int gifType=Integer.parseInt(st.nextToken());
+			if(layer<=0||layer>gifTypeOverride.length)
+			{
+				System.out.println("Please put in a valid layer for line "+counter);
+				continue;
+			}
+			if(yPos<0||yPos>=gifTypeOverride[layer].length)
+			{
+				System.out.println("Please put in a valid y position within 0 to "+(gifTypeOverride[layer].length-1)+" for line "+counter);
+				continue;
+			}
+			if(xPos<0||xPos>=gifTypeOverride[layer][yPos].length)
+			{
+				System.out.println("Please put in a valid x position within 0 to "+(gifTypeOverride[layer][yPos].length-1)+" for line "+counter);
+				continue;
+			}
+			if(gifType<=0||gifType>=arr[layer].length+1)
+			{
+				System.out.println("please put in a valid gif type within 1 to "+(arr[layer].length)+" for line "+counter);
+				continue;
+			}
+			layer--;
+			gifTypeOverride[layer][yPos][xPos]=gifType;
+			counter++;
+		}
 		for (int a = 0; a < numOfGifs; a++) {
 			//starting gif number/position of the current gif relative to the next one
 			double startGifNumX=(int)(Math.random()*arr[(a+1)%numOfGifs][0][0].getWidth());
 			double startGifNumY=(int)(Math.random()*arr[(a+1)%numOfGifs][0][0].getHeight());
+			if(startPos[a][0]!=-1)
+			{
+				startGifNumX=startPos[a][0];
+				startGifNumY=startPos[a][1];
+			}
 
 			//percentage zoom
 			double minXBoundLen=arr[a][0][0].getWidth()/2.0;
@@ -120,7 +180,10 @@ public class gifMaker {
 			int[][] gifArr=new int[arr[(a+1)%numOfGifs][0][0].getHeight()][arr[(a+1)%numOfGifs][0][0].getWidth()];
 			for (int b = 0; b < gifArr.length; b++) {
 				for (int c = 0; c < gifArr[0].length; c++) {
-					gifArr[b][c]=(int)(Math.random()*arr[a].length);
+					if(gifTypeOverride[a][b][c]!=0)
+						gifArr[b][c]=gifTypeOverride[a][b][c]-1;
+					else
+						gifArr[b][c]=(int)(Math.random()*arr[a].length);
 				}
 			}
 			gifArr[(int)startGifNumY][(int)startGifNumX]=0;
