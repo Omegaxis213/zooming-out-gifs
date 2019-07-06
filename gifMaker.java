@@ -6,7 +6,10 @@ import java.awt.image.*;
 public class gifMaker {
 	public static void main(String[] args) throws Exception {
 		//gif to be used
-		int numOfGifs=5;
+		int numOfGifs=0;
+		while(new File("gifs/gif"+(numOfGifs+1)+".gif").isFile())
+			numOfGifs++;
+
 		int[] frameLen=new int[numOfGifs];
 		int[] delay=new int[numOfGifs];
 		BufferedImage[][] arr = new BufferedImage[numOfGifs][];
@@ -14,13 +17,7 @@ public class gifMaker {
 		for (int i = 0; i < numOfGifs; i++) {
 			System.out.println(i);
 			GifDecoder d = new GifDecoder();
-			// d.read("gif"+(i+4)+".gif");
-			if(i==0||i==2)
-				d.read("gif12.gif");
-			else if(i==1||i==3)
-				d.read("gif13.gif");
-			else if(i==4)
-				d.read("gif14.gif");
+			d.read("gifs/gif"+(i+1)+".gif");
 			int n = d.getFrameCount();
 			frameLen[i] = n;
 			maxFrameLen=Math.max(maxFrameLen,frameLen[i]);
@@ -31,17 +28,15 @@ public class gifMaker {
 				arr[i][j] = frame;
 			}
 		}
-		int scaleFactor=1;
-		// int[][][][] avgColors=new int[n][arr[0].getHeight()/scaleFactor+1][arr[0].getWidth()/scaleFactor+1][4];
 		//contains the average colors of the current frame for the previous frame to transition into
 		int[][][][][] avgColors=new int[numOfGifs][][][][];
 		for (int a = 0; a < numOfGifs; a++) {
-			avgColors[a]=new int[arr[a].length][arr[a][0].getHeight()/scaleFactor+1][arr[a][0].getWidth()/scaleFactor+1][4];
+			avgColors[a]=new int[arr[a].length][arr[a][0].getHeight()+1][arr[a][0].getWidth()+1][4];
 			for (int i = 0; i < arr[a].length; i++) {
 				for (int j = 0; j < arr[a][i].getHeight(); j++) {
 					for (int k = 0; k < arr[a][i].getWidth(); k++) {
-						int xPos=k/scaleFactor;
-						int yPos=j/scaleFactor;
+						int xPos=k;
+						int yPos=j;
 						int color=arr[a][i].getRGB(k,j);
 						int alpha=color>>24&255;
 						int red=color>>16&255;
@@ -56,15 +51,6 @@ public class gifMaker {
 			}
 		}
 		System.out.println(Arrays.toString(delay));
-		// for (int i = 0; i < avgColors.length; i++) {
-		// 	for (int j = 0; j < avgColors[0].length; j++) {
-		// 		for (int k = 0; k < avgColors[0][0].length; k++) {
-		// 			for (int l = 0; l < avgColors[0][0][0].length; l++) {
-		// 				avgColors[i][j][k][l]/=scaleFactor*scaleFactor;
-		// 			}
-		// 		}
-		// 	}
-		// }
 		System.out.println(arr[0][0].getHeight()+" "+arr[0][0].getWidth());
 
 		// AnimatedGifEncoder test=new AnimatedGifEncoder();
@@ -72,7 +58,6 @@ public class gifMaker {
 		AnimatedGifEncoder e = new AnimatedGifEncoder();
 		e.start(new FileOutputStream("finalGIF.gif"));
 		e.setRepeat(0);
-		// e.setDelay(delay[0]);
 
 		// int numOfLoops=4;
 
@@ -80,7 +65,12 @@ public class gifMaker {
 		//Default value will be one time. Only supports integer numbers
 		int[] frameMult=new int[numOfGifs];
 		Arrays.fill(frameMult,1);
-		frameMult[3]=3;
+		BufferedReader f=new BufferedReader(new FileReader("gifs/gifProperties.txt"));
+		for (int i = 0; i < numOfGifs; i++) {
+			int num=Integer.parseInt(f.readLine());
+			if(num<=0) continue;
+			frameMult[i]=num;
+		}
 		for (int a = 0; a < numOfGifs; a++) {
 			//starting gif number/position of the current gif relative to the next one
 			double startGifNumX=(int)(Math.random()*arr[(a+1)%numOfGifs][0].getWidth());
@@ -92,12 +82,11 @@ public class gifMaker {
 			double minYBoundLen=arr[a][0].getHeight()/2.0;
 			double maxYBoundLen=arr[a][0].getHeight()/2.0;
 			double nextMinXBound=arr[a][0].getWidth()/2.0+startGifNumX*arr[a][0].getWidth();
-			double nextMaxXBound=arr[(a+1)%numOfGifs][0].getWidth()*arr[a][0].getWidth()/scaleFactor-(arr[a][0].getWidth()/2.0*3+startGifNumX*arr[a][0].getWidth());
+			double nextMaxXBound=arr[(a+1)%numOfGifs][0].getWidth()*arr[a][0].getWidth()-(arr[a][0].getWidth()/2.0*3+startGifNumX*arr[a][0].getWidth());
 			double nextMinYBound=arr[a][0].getHeight()/2.0+startGifNumY*arr[a][0].getHeight();
-			double nextMaxYBound=arr[(a+1)%numOfGifs][0].getHeight()*arr[a][0].getHeight()/scaleFactor-(arr[a][0].getHeight()/2.0*3+startGifNumY*arr[a][0].getHeight());
+			double nextMaxYBound=arr[(a+1)%numOfGifs][0].getHeight()*arr[a][0].getHeight()-(arr[a][0].getHeight()/2.0*3+startGifNumY*arr[a][0].getHeight());
 
 			int numOfFrames=frameMult[a]*frameLen[(a+1)%numOfGifs];
-			// int numOfFrames=2*maxFrameLen/frameLen[a]*frameLen[a];
 			double minXBoundMult=Math.pow(10,Math.log10(nextMinXBound/minXBoundLen)/numOfFrames);
 			double minYBoundMult=Math.pow(10,Math.log10(nextMinYBound/minYBoundLen)/numOfFrames);
 			double maxXBoundMult=Math.pow(10,Math.log10(nextMaxXBound/maxXBoundLen)/numOfFrames);
@@ -107,14 +96,10 @@ public class gifMaker {
 			//Linear moving center
 			double gifCenterXPos=startGifNumX*arr[a][0].getWidth()+arr[a][0].getWidth()/2.0;
 			double gifCenterYPos=startGifNumY*arr[a][0].getHeight()+arr[a][0].getHeight()/2.0;
-			double gifEndXPos=arr[(a+1)%numOfGifs][0].getWidth()*arr[a][0].getWidth()/scaleFactor-nextMaxXBound-arr[a][0].getWidth()/2.0;
-			double gifEndYPos=arr[(a+1)%numOfGifs][0].getHeight()*arr[a][0].getHeight()/scaleFactor-nextMaxYBound-arr[a][0].getHeight()/2.0;
-			// gifCenterXPos=gifEndXPos;
-			// gifCenterYPos=gifEndYPos;
+			double gifEndXPos=arr[(a+1)%numOfGifs][0].getWidth()*arr[a][0].getWidth()-nextMaxXBound-arr[a][0].getWidth()/2.0;
+			double gifEndYPos=arr[(a+1)%numOfGifs][0].getHeight()*arr[a][0].getHeight()-nextMaxYBound-arr[a][0].getHeight()/2.0;
 			double gifCenterXInc=(gifEndXPos-gifCenterXPos)/numOfFrames;
 			double gifCenterYInc=(gifEndYPos-gifCenterYPos)/numOfFrames;
-
-			// int delay=d.getDelay(0);
 
 			BufferedImage[] res=new BufferedImage[numOfFrames];
 
@@ -130,25 +115,7 @@ public class gifMaker {
 						int gifYPos=(int)(yPos/arr[a][0].getHeight());
 						xPos%=arr[a][0].getWidth();
 						yPos%=arr[a][0].getHeight();
-						//nearest neighbor
-						// double disOne=((int)xPos-xPos)*((int)xPos-xPos)+((int)yPos-yPos)*((int)yPos-yPos);
-						// double disTwo=((int)xPos-xPos+1)*((int)xPos-xPos+1)+((int)yPos-yPos)*((int)yPos-yPos);
-						// double disThree=((int)xPos-xPos)*((int)xPos-xPos)+((int)yPos-yPos+1)*((int)yPos-yPos+1);
-						// double disFour=((int)xPos-xPos+1)*((int)xPos-xPos+1)+((int)yPos-yPos+1)*((int)yPos-yPos+1);
 
-						// if((int)xPos==arr[0].getWidth()-1)
-						// {
-						// 	disTwo=Double.POSITIVE_INFINITY;
-						// 	disFour=Double.POSITIVE_INFINITY;
-						// }
-						// if((int)yPos==arr[0].getHeight()-1)
-						// {
-						// 	disThree=Double.POSITIVE_INFINITY;
-						// 	disFour=Double.POSITIVE_INFINITY;
-						// }
-
-						// double minDis=Math.min(disOne,Math.min(disTwo,Math.min(disThree,disFour)));
-						// int color=minDis==disOne?arr[i%n].getRGB((int)xPos,(int)yPos):minDis==disTwo?arr[i%n].getRGB((int)xPos+1,(int)yPos):minDis==disThree?arr[i%n].getRGB((int)xPos,(int)yPos+1):arr[i%n].getRGB((int)xPos+1,(int)yPos+1);
 						int color=arr[a][i%frameLen[a]].getRGB((int)xPos,(int)yPos);
 						int alpha=color>>24&255;
 						int red=color>>16&255;
