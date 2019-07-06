@@ -3,7 +3,19 @@ Makes a gif that zooms out into another gif and so on.
 
 The GIF encoder and decoder was used from rtley's repo: https://github.com/rtyley
 
-Put all the gifs in the gifs folder and number them starting from 1 to however many gifs you want to add. That will be the order the gifs will play in. To have duplicate gifs, you will have to re-add a new copy of the gif and rename it to fit in the order for now. The gifProperties text file inside the gifs folder is used to determine how long each gif will last for. Only put integer numbers in there and the row which the number is on corresponds with the gif it's modifying.
+Put all the gifs in the gifs folder and number them starting from 1 to however many gifs you want to add. That will be the order the gifs will play in. To have duplicate gifs, you will have to re-add a new copy of the gif and rename it to fit in the order for now.
+
+The gifProperties.txt file inside the gifs folder is used to determine how long each gif will last for. Only put integer numbers in there and the row which the number is on corresponds with the gif it's modifying.
+
+Eg.
+
+1
+
+2
+
+3
+
+The first layer will last for one whole completion of the gif on the layer on top of it that you specified. The second layer will last for two whole completions of the gif on the layer on top of it that you specified. The third layer will last for three whole completion of the gif on the first layer that you started out with and completes the loop.
 
 If you want multiple gifs to play on the same layer as each other, then chain them together with the layer number and then a dash with a consecutive number. Eg. gif1-1.gif, gif1-2.gif, gif1-3.gif, etc...
 
