@@ -67,27 +67,62 @@ public class gifMaker {
 		}
 		//manual override for starting position of the gif on each layer
 		int[][] startPos=new int[numOfGifs][2];
-		f=new BufferedReader(new FileReader("gifs/gifStartingPositions.txt"));
 		for (int i = 0; i < numOfGifs; i++) {
-			startPos[i][0]=startPos[i][1]=-1;
-			if(!f.ready()) continue;
-			StringTokenizer st=new StringTokenizer(f.readLine());
+			for (int j = 0; j < 2; j++) {
+				startPos[i][j]=-1;
+			}
+		}
+		f=new BufferedReader(new FileReader("gifs/gifStartingPositions.txt"));
+		int counter=0;
+		while(f.ready())
+		{
+			StringTokenizer st=new StringTokenizer(f.readLine(),"(,) ");
+			int layer=Integer.parseInt(st.nextToken());
 			int xPos=Integer.parseInt(st.nextToken());
 			int yPos=Integer.parseInt(st.nextToken());
-			if(xPos<0||yPos<0||xPos>=arr[i][0][0].getWidth()||yPos>=arr[i][0][0].getHeight())
+			layer--;
+			counter++;
+			if(layer<0||layer>=numOfGifs)
 			{
-				System.out.println("Please put a coordinate within 0 to "+(arr[i][0][0].getWidth()-1)+" for the X position and 0 to "+(arr[i][0][0].getHeight()-1)+" for the Y position on layer "+(i+1));
+				System.out.println("gifStartingPostions.txt - Please put in a valid layer for line "+counter);
 				continue;
 			}
-			startPos[i][0]=xPos;
-			startPos[i][1]=yPos;
+			if(xPos<0||yPos<0||xPos>=arr[layer][0][0].getWidth()||yPos>=arr[layer][0][0].getHeight())
+			{
+				System.out.println("gifStartingPostions.txt - Please put a coordinate within 0 to "+(arr[layer][0][0].getWidth()-1)+" for the X position and 0 to "+(arr[layer][0][0].getHeight()-1)+" for the Y position on line "+counter);
+				continue;
+			}
+			startPos[layer][0]=xPos;
+			startPos[layer][1]=yPos;
+		}
+		//zoom in option
+		f=new BufferedReader(new FileReader("gifs/gifZoomType.txt"));
+		counter=0;
+		boolean[] layerIsZoomIn=new boolean[numOfGifs];
+		while(f.ready())
+		{
+			StringTokenizer st=new StringTokenizer(f.readLine());
+			int layer=Integer.parseInt(st.nextToken());
+			String type=st.nextToken().toLowerCase();
+			layer--;
+			counter++;
+			if(layer<0||layer>=numOfGifs)
+			{
+				System.out.println("gifZoomType.txt - Please put in a valid layer for line "+counter);
+				continue;
+			}
+			if(type.equals("in"))
+				layerIsZoomIn[layer]=true;
+			else if(!type.equals("out"))
+				System.out.println("gifZoomType.txt - Please put in a valid zoom for line "+counter);
 		}
 		int[][][] gifTypeOverride=new int[numOfGifs][][];
 		for (int i = 0; i < numOfGifs; i++) {
-			gifTypeOverride[i]=new int[arr[(i+1)%numOfGifs][0][0].getHeight()][arr[(i+1)%numOfGifs][0][0].getWidth()];
+			int nextGifLayer=layerIsZoomIn[i]?i:(i+1)%numOfGifs;
+			gifTypeOverride[i]=new int[arr[nextGifLayer][0][0].getHeight()][arr[nextGifLayer][0][0].getWidth()];
 		}
 		f=new BufferedReader(new FileReader("gifs/gifTypes.txt"));
-		int counter=0;
+		counter=0;
 		//manual override for which gif is used where
 		while(f.ready())
 		{
@@ -100,47 +135,51 @@ public class gifMaker {
 			counter++;
 			if(layer<0||layer>=gifTypeOverride.length)
 			{
-				System.out.println("Please put in a valid layer for line "+counter);
+				System.out.println("gifTypes.txt - Please put in a valid layer for line "+counter);
 				continue;
 			}
 			if(yPos<0||yPos>=gifTypeOverride[layer].length)
 			{
-				System.out.println("Please put in a valid y position within 0 to "+(gifTypeOverride[layer].length-1)+" for line "+counter);
+				System.out.println("gifTypes.txt - Please put in a valid y position within 0 to "+(gifTypeOverride[layer].length-1)+" for line "+counter);
 				continue;
 			}
 			if(xPos<0||xPos>=gifTypeOverride[layer][yPos].length)
 			{
-				System.out.println("Please put in a valid x position within 0 to "+(gifTypeOverride[layer][yPos].length-1)+" for line "+counter);
+				System.out.println("gifTypes.txt - Please put in a valid x position within 0 to "+(gifTypeOverride[layer][yPos].length-1)+" for line "+counter);
 				continue;
 			}
 			if(gifType<=0||gifType>=arr[layer].length+1)
 			{
-				System.out.println("please put in a valid gif type within 1 to "+(arr[layer].length)+" for line "+counter);
+				System.out.println("gifTypes.txt - Please put in a valid gif type within 1 to "+(arr[layer].length)+" for line "+counter);
 				continue;
 			}
 			gifTypeOverride[layer][yPos][xPos]=gifType;
 		}
 		for (int a = 0; a < numOfGifs; a++) {
+			//added for zoom in feature
+			int curGifLayer=layerIsZoomIn[a]?(a+1)%numOfGifs:a;
+			int nextGifLayer=layerIsZoomIn[a]?a:(a+1)%numOfGifs;
+
 			//starting gif number/position of the current gif relative to the next one
-			double startGifNumX=(int)(Math.random()*arr[(a+1)%numOfGifs][0][0].getWidth());
-			double startGifNumY=(int)(Math.random()*arr[(a+1)%numOfGifs][0][0].getHeight());
-			if(startPos[a][0]!=-1)
+			double startGifNumX=(int)(Math.random()*arr[nextGifLayer][0][0].getWidth());
+			double startGifNumY=(int)(Math.random()*arr[nextGifLayer][0][0].getHeight());
+			if(startPos[curGifLayer][0]!=-1)
 			{
-				startGifNumX=startPos[a][0];
-				startGifNumY=startPos[a][1];
+				startGifNumX=startPos[curGifLayer][0];
+				startGifNumY=startPos[curGifLayer][1];
 			}
 
 			//percentage zoom
-			double minXBoundLen=arr[a][0][0].getWidth()/2.0;
-			double maxXBoundLen=arr[a][0][0].getWidth()/2.0;
-			double minYBoundLen=arr[a][0][0].getHeight()/2.0;
-			double maxYBoundLen=arr[a][0][0].getHeight()/2.0;
-			double nextMinXBound=arr[a][0][0].getWidth()/2.0+startGifNumX*arr[a][0][0].getWidth();
-			double nextMaxXBound=arr[(a+1)%numOfGifs][0][0].getWidth()*arr[a][0][0].getWidth()-(arr[a][0][0].getWidth()/2.0*3+startGifNumX*arr[a][0][0].getWidth());
-			double nextMinYBound=arr[a][0][0].getHeight()/2.0+startGifNumY*arr[a][0][0].getHeight();
-			double nextMaxYBound=arr[(a+1)%numOfGifs][0][0].getHeight()*arr[a][0][0].getHeight()-(arr[a][0][0].getHeight()/2.0*3+startGifNumY*arr[a][0][0].getHeight());
+			double minXBoundLen=arr[curGifLayer][0][0].getWidth()/2.0;
+			double maxXBoundLen=arr[curGifLayer][0][0].getWidth()/2.0;
+			double minYBoundLen=arr[curGifLayer][0][0].getHeight()/2.0;
+			double maxYBoundLen=arr[curGifLayer][0][0].getHeight()/2.0;
+			double nextMinXBound=arr[curGifLayer][0][0].getWidth()/2.0+startGifNumX*arr[curGifLayer][0][0].getWidth();
+			double nextMaxXBound=arr[nextGifLayer][0][0].getWidth()*arr[curGifLayer][0][0].getWidth()-(arr[curGifLayer][0][0].getWidth()/2.0*3+startGifNumX*arr[curGifLayer][0][0].getWidth());
+			double nextMinYBound=arr[curGifLayer][0][0].getHeight()/2.0+startGifNumY*arr[curGifLayer][0][0].getHeight();
+			double nextMaxYBound=arr[nextGifLayer][0][0].getHeight()*arr[curGifLayer][0][0].getHeight()-(arr[curGifLayer][0][0].getHeight()/2.0*3+startGifNumY*arr[curGifLayer][0][0].getHeight());
 
-			int numOfFrames=frameMult[a]*frameLen[(a+1)%numOfGifs][0];
+			int numOfFrames=frameMult[curGifLayer]*frameLen[nextGifLayer][0];
 			double minXBoundMult=Math.pow(10,Math.log10(nextMinXBound/minXBoundLen)/numOfFrames);
 			double minYBoundMult=Math.pow(10,Math.log10(nextMinYBound/minYBoundLen)/numOfFrames);
 			double maxXBoundMult=Math.pow(10,Math.log10(nextMaxXBound/maxXBoundLen)/numOfFrames);
@@ -148,20 +187,20 @@ public class gifMaker {
 			System.out.println(nextMaxXBound+" "+maxXBoundLen);
 
 			//Linear moving center
-			double gifCenterXPos=startGifNumX*arr[a][0][0].getWidth()+arr[a][0][0].getWidth()/2.0;
-			double gifCenterYPos=startGifNumY*arr[a][0][0].getHeight()+arr[a][0][0].getHeight()/2.0;
-			double gifEndXPos=arr[(a+1)%numOfGifs][0][0].getWidth()*arr[a][0][0].getWidth()-nextMaxXBound-arr[a][0][0].getWidth()/2.0;
-			double gifEndYPos=arr[(a+1)%numOfGifs][0][0].getHeight()*arr[a][0][0].getHeight()-nextMaxYBound-arr[a][0][0].getHeight()/2.0;
+			double gifCenterXPos=startGifNumX*arr[curGifLayer][0][0].getWidth()+arr[curGifLayer][0][0].getWidth()/2.0;
+			double gifCenterYPos=startGifNumY*arr[curGifLayer][0][0].getHeight()+arr[curGifLayer][0][0].getHeight()/2.0;
+			double gifEndXPos=arr[nextGifLayer][0][0].getWidth()*arr[curGifLayer][0][0].getWidth()-nextMaxXBound-arr[curGifLayer][0][0].getWidth()/2.0;
+			double gifEndYPos=arr[nextGifLayer][0][0].getHeight()*arr[curGifLayer][0][0].getHeight()-nextMaxYBound-arr[curGifLayer][0][0].getHeight()/2.0;
 			double gifCenterXInc=(gifEndXPos-gifCenterXPos)/numOfFrames;
 			double gifCenterYInc=(gifEndYPos-gifCenterYPos)/numOfFrames;
 
-			int[][] gifArr=new int[arr[(a+1)%numOfGifs][0][0].getHeight()][arr[(a+1)%numOfGifs][0][0].getWidth()];
+			int[][] gifArr=new int[arr[nextGifLayer][0][0].getHeight()][arr[nextGifLayer][0][0].getWidth()];
 			for (int b = 0; b < gifArr.length; b++) {
 				for (int c = 0; c < gifArr[0].length; c++) {
-					if(gifTypeOverride[a][b][c]!=0)
-						gifArr[b][c]=gifTypeOverride[a][b][c]-1;
+					if(gifTypeOverride[nextGifLayer][b][c]!=0)
+						gifArr[b][c]=gifTypeOverride[nextGifLayer][b][c]-1;
 					else
-						gifArr[b][c]=(int)(Math.random()*arr[a].length);
+						gifArr[b][c]=(int)(Math.random()*arr[curGifLayer].length);
 				}
 			}
 			gifArr[(int)startGifNumY][(int)startGifNumX]=0;
@@ -169,38 +208,47 @@ public class gifMaker {
 			BufferedImage[] res=new BufferedImage[numOfFrames];
 
 			for (int i = 0; i < numOfFrames; i++) {
-				res[i]=new BufferedImage(arr[0][0][0].getWidth(),arr[0][0][0].getHeight(),BufferedImage.TYPE_INT_ARGB);
+				res[layerIsZoomIn[a]?res.length-i-1:i]=new BufferedImage(arr[0][0][0].getWidth(),arr[0][0][0].getHeight(),BufferedImage.TYPE_INT_ARGB);
 				double adjustWidth=(maxXBoundLen+minXBoundLen)/arr[0][0][0].getWidth();
 				double adjustHeight=(maxYBoundLen+minYBoundLen)/arr[0][0][0].getHeight();
 				for (int j = 0; j < arr[0][0][0].getHeight(); j++) {
 					for (int k = 0; k < arr[0][0][0].getWidth(); k++) {
 						double xPos=gifCenterXPos-minXBoundLen+k*adjustWidth;
 						double yPos=gifCenterYPos-minYBoundLen+j*adjustHeight;
-						int gifXPos=(int)(xPos/arr[a][0][0].getWidth());
-						int gifYPos=(int)(yPos/arr[a][0][0].getHeight());
-						xPos%=arr[a][0][0].getWidth();
-						yPos%=arr[a][0][0].getHeight();
+						int gifXPos=(int)(xPos/arr[curGifLayer][0][0].getWidth());
+						int gifYPos=(int)(yPos/arr[curGifLayer][0][0].getHeight());
+						xPos%=arr[curGifLayer][0][0].getWidth();
+						yPos%=arr[curGifLayer][0][0].getHeight();
 
 						int randGifNum=gifArr[gifYPos][gifXPos];
-						int color=arr[a][randGifNum][i%frameLen[a][randGifNum]].getRGB((int)(xPos*arr[a][randGifNum][0].getWidth()/arr[a][0][0].getWidth()),(int)(yPos*arr[a][randGifNum][0].getHeight()/arr[a][0][0].getHeight()));
+
+						int color=arr[curGifLayer][randGifNum][i%frameLen[curGifLayer][randGifNum]].getRGB((int)(xPos*arr[curGifLayer][randGifNum][0].getWidth()/arr[curGifLayer][0][0].getWidth()),(int)(yPos*arr[curGifLayer][randGifNum][0].getHeight()/arr[curGifLayer][0][0].getHeight()));
 
 						int alpha=color>>24&255;
 						int red=color>>16&255;
 						int green=color>>8&255;
 						int blue=color&255;
 
-						int nextColor=arr[(a+1)%numOfGifs][0][i%frameLen[(a+1)%numOfGifs][0]].getRGB(gifXPos,gifYPos);
+						int nextColor=arr[nextGifLayer][0][i%frameLen[nextGifLayer][0]].getRGB(gifXPos,gifYPos);
 						int nextAlpha=nextColor>>24&255;
 						int nextRed=nextColor>>16&255;
 						int nextGreen=nextColor>>8&255;
 						int nextBlue=nextColor&255;
+
+						//invert color feature (Could be interesting to use)
+						// red=255-red;
+						// green=255-green;
+						// blue=255-blue;
+						// nextRed=255-nextRed;
+						// nextGreen=255-nextGreen;
+						// nextBlue=255-nextBlue;
 
 						alpha=(int)(alpha*(1-.9*i/numOfFrames)+nextAlpha*(.9*i/numOfFrames));
 						red=(int)(red*(1-.9*i/numOfFrames)+nextRed*(.9*i/numOfFrames));
 						green=(int)(green*(1-.9*i/numOfFrames)+nextGreen*(.9*i/numOfFrames));
 						blue=(int)(blue*(1-.9*i/numOfFrames)+nextBlue*(.9*i/numOfFrames));
 						color=(alpha<<24)+(red<<16)+(green<<8)+blue;
-						res[i].setRGB(k,j,color);
+						res[layerIsZoomIn[a]?res.length-i-1:i].setRGB(k,j,color);
 					}
 				}
 				// if(i==0)
@@ -208,14 +256,16 @@ public class gifMaker {
 				// 	test.setDelay(delay);
 				// 	test.addFrame(res[i]);
 				// }
-				e.setDelay((int)(delay[a]*(1-(double)i/numOfFrames)+delay[(a+1)%numOfGifs]*(double)i/numOfFrames));
-				e.addFrame(res[i]);
 				minXBoundLen*=minXBoundMult;
 				minYBoundLen*=minYBoundMult;
 				maxXBoundLen*=maxXBoundMult;
 				maxYBoundLen*=maxYBoundMult;
 				gifCenterXPos+=gifCenterXInc;
 				gifCenterYPos+=gifCenterYInc;
+			}
+			for (int i = 0; i < res.length-(layerIsZoomIn[a]^layerIsZoomIn[(a+1)%numOfGifs]?1:0); i++) {
+				e.setDelay((int)(delay[curGifLayer]*(1-(double)i/numOfFrames)+delay[nextGifLayer]*(double)i/numOfFrames));
+				e.addFrame(res[i]);
 			}
 		}
 		// test.finish();
