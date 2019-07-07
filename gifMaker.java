@@ -44,28 +44,6 @@ public class gifMaker {
 				}
 			}
 		}
-		//contains the average colors of the current frame for the previous frame to transition into
-		int[][][][][] avgColors=new int[numOfGifs][][][][];
-		for (int a = 0; a < numOfGifs; a++) {
-			avgColors[a]=new int[arr[a][0].length][arr[a][0][0].getHeight()+1][arr[a][0][0].getWidth()+1][4];
-			for (int i = 0; i < arr[a][0].length; i++) {
-				for (int j = 0; j < arr[a][0][i].getHeight(); j++) {
-					for (int k = 0; k < arr[a][0][i].getWidth(); k++) {
-						int xPos=k;
-						int yPos=j;
-						int color=arr[a][0][i].getRGB(k,j);
-						int alpha=color>>24&255;
-						int red=color>>16&255;
-						int green=color>>8&255;
-						int blue=color&255;
-						avgColors[a][i][yPos][xPos][0]+=alpha;
-						avgColors[a][i][yPos][xPos][1]+=red;
-						avgColors[a][i][yPos][xPos][2]+=green;
-						avgColors[a][i][yPos][xPos][3]+=blue;
-					}
-				}
-			}
-		}
 		System.out.println(Arrays.toString(delay));
 		System.out.println(arr[0][0][0].getHeight()+" "+arr[0][0][0].getWidth());
 
@@ -118,7 +96,6 @@ public class gifMaker {
 			int xPos=Integer.parseInt(st.nextToken());
 			int yPos=Integer.parseInt(st.nextToken());
 			int gifType=Integer.parseInt(st.nextToken());
-			layer--;
 			if(layer<=0||layer>gifTypeOverride.length)
 			{
 				System.out.println("Please put in a valid layer for line "+counter);
@@ -139,6 +116,7 @@ public class gifMaker {
 				System.out.println("please put in a valid gif type within 1 to "+(arr[layer].length)+" for line "+counter);
 				continue;
 			}
+			layer--;
 			gifTypeOverride[layer][yPos][xPos]=gifType;
 			counter++;
 		}
@@ -210,10 +188,17 @@ public class gifMaker {
 						int red=color>>16&255;
 						int green=color>>8&255;
 						int blue=color&255;
-						alpha=(int)(alpha*(1-.9*i/numOfFrames)+avgColors[(a+1)%numOfGifs][i%frameLen[(a+1)%numOfGifs][0]][gifYPos][gifXPos][0]*(.9*i/numOfFrames));
-						red=(int)(red*(1-.9*i/numOfFrames)+avgColors[(a+1)%numOfGifs][i%frameLen[(a+1)%numOfGifs][0]][gifYPos][gifXPos][1]*(.9*i/numOfFrames));
-						green=(int)(green*(1-.9*i/numOfFrames)+avgColors[(a+1)%numOfGifs][i%frameLen[(a+1)%numOfGifs][0]][gifYPos][gifXPos][2]*(.9*i/numOfFrames));
-						blue=(int)(blue*(1-.9*i/numOfFrames)+avgColors[(a+1)%numOfGifs][i%frameLen[(a+1)%numOfGifs][0]][gifYPos][gifXPos][3]*(.9*i/numOfFrames));
+
+						int nextColor=arr[(a+1)%numOfGifs][0][i%frameLen[(a+1)%numOfGifs][0]].getRGB(gifXPos,gifYPos);
+						int nextAlpha=nextColor>>24&255;
+						int nextRed=nextColor>>16&255;
+						int nextGreen=nextColor>>8&255;
+						int nextBlue=nextColor&255;
+
+						alpha=(int)(alpha*(1-.9*i/numOfFrames)+nextAlpha*(.9*i/numOfFrames));
+						red=(int)(red*(1-.9*i/numOfFrames)+nextRed*(.9*i/numOfFrames));
+						green=(int)(green*(1-.9*i/numOfFrames)+nextGreen*(.9*i/numOfFrames));
+						blue=(int)(blue*(1-.9*i/numOfFrames)+nextBlue*(.9*i/numOfFrames));
 						color=(alpha<<24)+(red<<16)+(green<<8)+blue;
 						res[i].setRGB(k,j,color);
 					}
