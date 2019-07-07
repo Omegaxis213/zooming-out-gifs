@@ -1,0 +1,22 @@
+First, you want to download the latest version of jdk. (google jdk and it should be the first result)
+Then you need to download the file by clicking on the "clone or download" button and extract the files.
+I already put gifs in the folder as an example, but you can replace them with your own. (Make sure to read the readme on github for more instructions)
+When you have all the gifs you want in the folder and modified the settings, now you need to run the program.
+You can download an IDE (such as IntelliJ or Eclipse) and set it up to run the program, but if you don't want to download it, you can run the program manually through command line.
+(Windows Only):
+Note, don't include any quotes I put in the following lines, they are there to clarify what to type.
+First, go to the windows search bar, type in "cmd", and hit enter. This should bring up command line which looks like a black box with text on it. Type "cd" just in case someone else has used command line before.
+Now you need to path towards your file. You will need to type "cd fileName" one file/folder at a time to reach the correct folder.
+Eg.
+If you stored the folder in "C:\Users\Name\Desktop" then do the following instructions:
+"cd"
+"cd Desktop"
+Now that you're on your desktop, find out the folder names containing the gifMaker.java and type them in one by one.
+If you directly extract from the zip file, it should be something like this:
+Eg.
+"cd zooming-out-gifs-master"
+"cd zooming-out-gifs-master"
+Now that you are in the correct folder, you will compile and run the program with these commands:
+"javac gifMaker.java"
+"java gifMaker"
+And it should run the program.
