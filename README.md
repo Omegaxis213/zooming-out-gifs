@@ -48,7 +48,9 @@ To make a layer zoom in instead of zooming out, go into gifZoomType.txt and add 
 Eg.
 
 1 in
+
 2 out
+
 3 in
 
 This will make the first layer zoom in, the second layer zoom out, and then the third layer will zoom back in.
