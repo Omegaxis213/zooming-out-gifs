@@ -87,7 +87,7 @@ public class gifMaker {
 			gifTypeOverride[i]=new int[arr[(i+1)%numOfGifs][0][0].getHeight()][arr[(i+1)%numOfGifs][0][0].getWidth()];
 		}
 		f=new BufferedReader(new FileReader("gifs/gifTypes.txt"));
-		int counter=1;
+		int counter=0;
 		//manual override for which gif is used where
 		while(f.ready())
 		{
@@ -96,6 +96,8 @@ public class gifMaker {
 			int xPos=Integer.parseInt(st.nextToken());
 			int yPos=Integer.parseInt(st.nextToken());
 			int gifType=Integer.parseInt(st.nextToken());
+			layer--;
+			counter++;
 			if(layer<=0||layer>gifTypeOverride.length)
 			{
 				System.out.println("Please put in a valid layer for line "+counter);
@@ -116,9 +118,7 @@ public class gifMaker {
 				System.out.println("please put in a valid gif type within 1 to "+(arr[layer].length)+" for line "+counter);
 				continue;
 			}
-			layer--;
 			gifTypeOverride[layer][yPos][xPos]=gifType;
-			counter++;
 		}
 		for (int a = 0; a < numOfGifs; a++) {
 			//starting gif number/position of the current gif relative to the next one
