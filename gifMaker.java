@@ -98,7 +98,7 @@ public class gifMaker {
 			int gifType=Integer.parseInt(st.nextToken());
 			layer--;
 			counter++;
-			if(layer<=0||layer>gifTypeOverride.length)
+			if(layer<0||layer>=gifTypeOverride.length)
 			{
 				System.out.println("Please put in a valid layer for line "+counter);
 				continue;
