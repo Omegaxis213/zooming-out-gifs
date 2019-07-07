@@ -1,6 +1,8 @@
 # zooming-out-gifs
 Makes a gif that zooms out into another gif and so on.
 
+![finalGIF](https://user-images.githubusercontent.com/37278446/60606500-19297480-9d81-11e9-807d-027aa0612a49.gif)
+
 The GIF encoder and decoder was used from rtley's repo: https://github.com/rtyley
 
 Put all the gifs in the gifs folder and number them starting from 1 to however many gifs you want to add. That will be the order the gifs will play in. To have duplicate gifs, you will have to re-add a new copy of the gif and rename it to fit in the order for now.
@@ -42,5 +44,3 @@ Eg.
 This will put the 3rd gif (gif1-3.gif) on the first layer in the 3rd gif from the left and uppermost layer. Then it will place the 2nd gif (gif3-2.gif) on the third layer in the 5th gif from the left and 10th gif from the top. Finally, it will place the 4th gif (gif2-4.gif) on the second layer in the topleft corner.
 
 An example has been put in the gifs folder to look at.
-
-![finalGIF](https://user-images.githubusercontent.com/37278446/60606500-19297480-9d81-11e9-807d-027aa0612a49.gif)
