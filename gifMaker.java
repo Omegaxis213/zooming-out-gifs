@@ -119,7 +119,7 @@ public class gifMaker {
 		int[][][] gifTypeOverride=new int[numOfGifs][][];
 		for (int i = 0; i < numOfGifs; i++) {
 			int nextGifLayer=layerIsZoomIn[i]?i:(i+1)%numOfGifs;
-			gifTypeOverride[i]=new int[arr[nextGifLayer][0][0].getHeight()][arr[nextGifLayer][0][0].getWidth()];
+			gifTypeOverride[nextGifLayer]=new int[arr[nextGifLayer][0][0].getHeight()][arr[nextGifLayer][0][0].getWidth()];
 		}
 		f=new BufferedReader(new FileReader("gifs/gifTypes.txt"));
 		counter=0;
@@ -159,6 +159,7 @@ public class gifMaker {
 			//added for zoom in feature
 			int curGifLayer=layerIsZoomIn[a]?(a+1)%numOfGifs:a;
 			int nextGifLayer=layerIsZoomIn[a]?a:(a+1)%numOfGifs;
+			System.out.println(nextGifLayer);
 
 			//starting gif number/position of the current gif relative to the next one
 			double startGifNumX=(int)(Math.random()*arr[nextGifLayer][0][0].getWidth());
