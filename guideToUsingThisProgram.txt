@@ -1,7 +1,7 @@
 No Programming Experience/Too Lazy to Compile the Program Guide:
 
 First, you want to download the latest version of jre. (google jre and it should be the first result. Make sure it's more recent than 1.8.0)
-Then download the executable and gifs folder. (None of the other files are needed if you are a beginner to programming)
+Then download the executable and gifs folder. (None of the other files are needed if you are just going to run the program)
 Put the executable and gifs folder in the same folder anywhere you like and follow the readme on how to configure the settings for the gifs.
 Then just run the executable once all the gifs are in place and the settings are good. The program is set to start off with 512 MB and max out at 4 GB. Make sure you have at least 512 MB before running the executable.
 
