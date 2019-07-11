@@ -1,4 +1,13 @@
-First, you want to download the latest version of jdk. (google jdk and it should be the first result)
+No Programming Experience/Too Lazy to Compile the Program Guide:
+
+First, you want to download the latest version of jre. (google jre and it should be the first result. Make sure it's more recent than 1.8.0)
+Then download the executable and gifs folder. (None of the other files are needed if you are a beginner to programming)
+Put the executable and gifs folder in the same folder anywhere you like and follow the readme on how to configure the settings for the gifs.
+Then just run the executable once all the gifs are in place and the settings are good. The program is set to start off with 512 MB and max out at 4 GB. Make sure you have at least 512 MB before running the executable.
+
+Some Programming Experience Guide:
+
+First, you want to download the latest version of jdk. (google jdk and it should be the first result. Make sure it's more recent than 1.8.0)
 Then you need to download the file by clicking on the "clone or download" button and extract the files.
 I already put gifs in the folder as an example, but you can replace them with your own. (Make sure to read the readme on github for more instructions)
 When you have all the gifs you want in the folder and modified the settings, now you need to run the program.
