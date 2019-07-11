@@ -223,7 +223,10 @@ public class gifMaker {
 
 						int randGifNum=gifArr[gifYPos][gifXPos];
 
-						int color=arr[curGifLayer][randGifNum][i%frameLen[curGifLayer][randGifNum]].getRGB((int)(xPos*arr[curGifLayer][randGifNum][0].getWidth()/arr[curGifLayer][0][0].getWidth()),(int)(yPos*arr[curGifLayer][randGifNum][0].getHeight()/arr[curGifLayer][0][0].getHeight()));
+						int newXPos=(int)(xPos*arr[curGifLayer][randGifNum][0].getWidth()/arr[curGifLayer][0][0].getWidth());
+						int newYPos=(int)(yPos*arr[curGifLayer][randGifNum][0].getHeight()/arr[curGifLayer][0][0].getHeight());
+
+						int color=arr[curGifLayer][randGifNum][i%frameLen[curGifLayer][randGifNum]].getRGB(newXPos,newYPos);
 
 						int alpha=color>>24&255;
 						int red=color>>16&255;
@@ -236,7 +239,7 @@ public class gifMaker {
 						int nextGreen=nextColor>>8&255;
 						int nextBlue=nextColor&255;
 
-						//invert color feature (Could be interesting to use)
+						//invert color feature (Could be interesting to use. Maybe try random gif invert?)
 						// red=255-red;
 						// green=255-green;
 						// blue=255-blue;
@@ -244,10 +247,10 @@ public class gifMaker {
 						// nextGreen=255-nextGreen;
 						// nextBlue=255-nextBlue;
 
-						alpha=(int)(alpha*(1-.9*i/numOfFrames)+nextAlpha*(.9*i/numOfFrames));
-						red=(int)(red*(1-.9*i/numOfFrames)+nextRed*(.9*i/numOfFrames));
-						green=(int)(green*(1-.9*i/numOfFrames)+nextGreen*(.9*i/numOfFrames));
-						blue=(int)(blue*(1-.9*i/numOfFrames)+nextBlue*(.9*i/numOfFrames));
+						alpha=(int)(alpha*(1-(double)i/numOfFrames)+nextAlpha*((double)i/numOfFrames));
+						red=(int)(red*(1-(double)i/numOfFrames)+nextRed*((double)i/numOfFrames));
+						green=(int)(green*(1-(double)i/numOfFrames)+nextGreen*((double)i/numOfFrames));
+						blue=(int)(blue*(1-(double)i/numOfFrames)+nextBlue*((double)i/numOfFrames));
 						color=(alpha<<24)+(red<<16)+(green<<8)+blue;
 						res[layerIsZoomIn[a]?res.length-i-1:i].setRGB(k,j,color);
 					}
