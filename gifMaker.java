@@ -60,10 +60,20 @@ public class gifMaker {
 		int[] frameMult=new int[numOfGifs];
 		Arrays.fill(frameMult,1);
 		BufferedReader f=new BufferedReader(new FileReader("gifs/gifLength.txt"));
-		for (int i = 0; i < numOfGifs; i++) {
-			int num=Integer.parseInt(f.readLine());
-			if(num<=0) continue;
-			frameMult[i]=num;
+		int counter=0;
+		while(f.ready())
+		{
+			StringTokenizer st=new StringTokenizer(f.readLine());
+			int layer=Integer.parseInt(st.nextToken());
+			int length=Integer.parseInt(st.nextToken());
+			layer--;
+			counter++;
+			if(layer<0||layer>=numOfGifs)
+			{
+				System.out.println("gifLength.txt - Please put in a valid layer for line "+counter);
+				continue;
+			}
+			frameMult[layer]=length;
 		}
 		//manual override for starting position of the gif on each layer
 		int[][] startPos=new int[numOfGifs][2];
@@ -73,7 +83,7 @@ public class gifMaker {
 			}
 		}
 		f=new BufferedReader(new FileReader("gifs/gifStartingPositions.txt"));
-		int counter=0;
+		counter=0;
 		while(f.ready())
 		{
 			StringTokenizer st=new StringTokenizer(f.readLine(),"(,) ");
