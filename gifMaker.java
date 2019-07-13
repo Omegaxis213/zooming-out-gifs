@@ -59,7 +59,7 @@ public class gifMaker {
 		//Default value will be one time. Only supports integer numbers
 		int[] frameMult=new int[numOfGifs];
 		Arrays.fill(frameMult,1);
-		BufferedReader f=new BufferedReader(new FileReader("gifs/gifProperties.txt"));
+		BufferedReader f=new BufferedReader(new FileReader("gifs/gifLength.txt"));
 		for (int i = 0; i < numOfGifs; i++) {
 			int num=Integer.parseInt(f.readLine());
 			if(num<=0) continue;
@@ -208,6 +208,15 @@ public class gifMaker {
 
 			BufferedImage[] res=new BufferedImage[numOfFrames];
 
+			//how much to increase rotation each frame. Make sure to keep the constant number a multiple of 2 to ensure consistency and smoothness
+			double thetaInc=2*Math.PI/numOfFrames;
+
+			//fix position after rotation (Don't know why I need 3 multiplications instead of just 2)
+			long widthNextMod=(long)arr[nextGifLayer][0][0].getWidth()*arr[nextGifLayer][0][0].getWidth()*arr[nextGifLayer][0][0].getWidth();
+			long heightNextMod=(long)arr[nextGifLayer][0][0].getHeight()*arr[nextGifLayer][0][0].getHeight()*arr[nextGifLayer][0][0].getHeight();
+			long widthCurMod=(long)arr[curGifLayer][0][0].getWidth()*arr[curGifLayer][0][0].getWidth()*arr[curGifLayer][0][0].getWidth();
+			long heightCurMod=(long)arr[curGifLayer][0][0].getHeight()*arr[curGifLayer][0][0].getHeight()*arr[curGifLayer][0][0].getHeight();
+
 			for (int i = 0; i < numOfFrames; i++) {
 				res[layerIsZoomIn[a]?res.length-i-1:i]=new BufferedImage(arr[0][0][0].getWidth(),arr[0][0][0].getHeight(),BufferedImage.TYPE_INT_ARGB);
 				double adjustWidth=(maxXBoundLen+minXBoundLen)/arr[0][0][0].getWidth();
@@ -216,17 +225,32 @@ public class gifMaker {
 					for (int k = 0; k < arr[0][0][0].getWidth(); k++) {
 						double xPos=gifCenterXPos-minXBoundLen+k*adjustWidth;
 						double yPos=gifCenterYPos-minYBoundLen+j*adjustHeight;
-						int gifXPos=(int)(xPos/arr[curGifLayer][0][0].getWidth());
-						int gifYPos=(int)(yPos/arr[curGifLayer][0][0].getHeight());
-						xPos%=arr[curGifLayer][0][0].getWidth();
-						yPos%=arr[curGifLayer][0][0].getHeight();
+
+						//rotate codes
+						double tempXPos=xPos-gifCenterXPos;
+						double tempYPos=yPos-gifCenterYPos;
+
+						double newXPos=tempXPos*Math.cos(thetaInc*i)-tempYPos*Math.sin(thetaInc*i);
+						double newYPos=tempXPos*Math.sin(thetaInc*i)+tempYPos*Math.cos(thetaInc*i);
+
+						newXPos+=gifCenterXPos;
+						newYPos+=gifCenterYPos;
+
+						int gifXPos=(int)(((int)(newXPos/arr[curGifLayer][0][0].getWidth())+widthNextMod)%arr[nextGifLayer][0][0].getWidth());
+						int gifYPos=(int)(((int)(newYPos/arr[curGifLayer][0][0].getHeight())+heightNextMod)%arr[nextGifLayer][0][0].getHeight());
+						xPos=(newXPos+widthCurMod)%arr[curGifLayer][0][0].getWidth();
+						yPos=(newYPos+heightCurMod)%arr[curGifLayer][0][0].getHeight();
+						// int gifXPos=(int)(xPos/arr[curGifLayer][0][0].getWidth());
+						// int gifYPos=(int)(yPos/arr[curGifLayer][0][0].getHeight());
+						// xPos%=arr[curGifLayer][0][0].getWidth();
+						// yPos%=arr[curGifLayer][0][0].getHeight();
 
 						int randGifNum=gifArr[gifYPos][gifXPos];
 
-						int newXPos=(int)(xPos*arr[curGifLayer][randGifNum][0].getWidth()/arr[curGifLayer][0][0].getWidth());
-						int newYPos=(int)(yPos*arr[curGifLayer][randGifNum][0].getHeight()/arr[curGifLayer][0][0].getHeight());
+						int colorXPos=(int)(xPos*arr[curGifLayer][randGifNum][0].getWidth()/arr[curGifLayer][0][0].getWidth());
+						int colorYPos=(int)(yPos*arr[curGifLayer][randGifNum][0].getHeight()/arr[curGifLayer][0][0].getHeight());
 
-						int color=arr[curGifLayer][randGifNum][i%frameLen[curGifLayer][randGifNum]].getRGB(newXPos,newYPos);
+						int color=arr[curGifLayer][randGifNum][i%frameLen[curGifLayer][randGifNum]].getRGB(colorXPos,colorYPos);
 
 						int alpha=color>>24&255;
 						int red=color>>16&255;
