@@ -155,6 +155,24 @@ public class gifMaker {
 			}
 			gifTypeOverride[layer][yPos][xPos]=gifType;
 		}
+		//spin feature
+		f=new BufferedReader(new FileReader("gifs/gifSpinSpeed.txt"));
+		counter=0;
+		int[] spinSpeed=new int[numOfGifs];
+		while(f.ready())
+		{
+			StringTokenizer st=new StringTokenizer(f.readLine());
+			int layer=Integer.parseInt(st.nextToken());
+			int speed=Integer.parseInt(st.nextToken());
+			layer--;
+			counter++;
+			if(layer<0||layer>=numOfGifs)
+			{
+				System.out.println("gifSpinSpeed.txt - Please put in a valid layer for line "+counter);
+				continue;
+			}
+			spinSpeed[layer]=speed;
+		}
 		for (int a = 0; a < numOfGifs; a++) {
 			//added for zoom in feature
 			int curGifLayer=layerIsZoomIn[a]?(a+1)%numOfGifs:a;
@@ -209,7 +227,7 @@ public class gifMaker {
 			BufferedImage[] res=new BufferedImage[numOfFrames];
 
 			//how much to increase rotation each frame. Make sure to keep the constant number a multiple of 2 to ensure consistency and smoothness
-			double thetaInc=2*Math.PI/numOfFrames;
+			double thetaInc=2*spinSpeed[a]*Math.PI/numOfFrames;
 
 			//fix position after rotation (Don't know why I need 3 multiplications instead of just 2)
 			long widthNextMod=(long)arr[nextGifLayer][0][0].getWidth()*arr[nextGifLayer][0][0].getWidth()*arr[nextGifLayer][0][0].getWidth();
